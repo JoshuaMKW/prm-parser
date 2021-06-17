@@ -124,32 +124,34 @@ class PrmFile(object):
             elif value.startswith("\""):
                 value = value[1:-1].encode("ascii")
             elif value.startswith("s8("):
-                value = int(value[3:-1], 16 if value[3:5] == "0x" else 10).to_bytes(1, "big", signed=True)
+                value = int(value[3:-1], 16 if value[3:5] in {"0x", "-0x"} else 10).to_bytes(1, "big", signed=True)
             elif value.startswith("s16("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(2, "big", signed=True)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(2, "big", signed=True)
             elif value.startswith("s32("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(4, "big", signed=True)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(4, "big", signed=True)
             elif value.startswith("s64("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(8, "big", signed=True)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(8, "big", signed=True)
             elif value.startswith("u8("):
-                value = int(value[3:-1], 16 if value[3:5] == "0x" else 10).to_bytes(1, "big", signed=False)
+                value = int(value[3:-1], 16 if value[3:5] in {"0x", "-0x"} else 10).to_bytes(1, "big", signed=False)
             elif value.startswith("u16("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(2, "big", signed=False)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(2, "big", signed=False)
             elif value.startswith("u32("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(4, "big", signed=False)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(4, "big", signed=False)
             elif value.startswith("u64("):
-                value = int(value[4:-1], 16 if value[4:6] == "0x" else 10).to_bytes(8, "big", signed=False)
+                value = int(value[4:-1], 16 if value[4:6] in {"0x", "-0x"} else 10).to_bytes(8, "big", signed=False)
             elif value.startswith("bool("):
                 value = 1 if value[5:-1].lower() == "true" else 0
                 value = value.to_bytes(1, "big", signed=False)
+            elif value.startswith("bytes("):
+                value = int(value[6:-1], 16).to_bytes(len(value[8:-1]) >> 1, "big", signed=False)
             else:
                 raise ValueError(f"Invalid value type found while parsing: {value.split('(')[0]}")
             return value
 
         entries = list()
         for line in text.splitlines():
-            line = line.strip()
-            if line == "" or line.startswith("#"):
+            line = line.strip().split("#")[0]
+            if line == "":
                 continue
 
             key, _, kvalue = line.split(maxsplit=2)
@@ -275,18 +277,9 @@ if __name__ == "__main__":
                                      allow_abbrev=False)
 
     parser.add_argument('path', help='input file/folder')
-    parser.add_argument('-d', '--dump',
-                        help='Dump parsed params.bin file output to a txt file',
-                        action='store_true')
     parser.add_argument("job",
                         help="Job to execute. Valid jobs are `c' (Compile), `d' (Decompile), and `i' (Init)",
                         choices=["c", "d", "i"])
-    parser.add_argument('-c', '--compile',
-                        help='Compile a txt file into params.bin',
-                        action='store_true')
-    parser.add_argument('-i', '--init',
-                        help='Create a clean txt template',
-                        action='store_true')
     parser.add_argument('--dest',
                         help='Where to create/dump contents to',
                         metavar='filepath')
