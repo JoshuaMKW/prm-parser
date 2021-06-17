@@ -102,7 +102,6 @@ class PrmFile(object):
         entries = list()
 
         entryNum = int.from_bytes(data[:4], "big", signed=False)
-        print(entryNum)
         for _ in range(entryNum):
             _entry = PrmEntry.from_bytes(data[4+offset:])
             entries.append(PrmEntry.from_bytes(data[4+offset:]))
@@ -266,7 +265,6 @@ def init_template(dest: Path):
     bytesEntry = PrmEntry("OurBytesEntry", b"\x00\xD0\xC0\xDE")
 
     prm = PrmFile({intEntry, boolEntry, strEntry, floatEntry, bytesEntry})
-    print(prm.to_text())
     dest.mkdir(parents=True, exist_ok=True)
     dest.write_text(prm.to_text())
 
