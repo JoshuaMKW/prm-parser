@@ -102,6 +102,7 @@ class PrmFile(object):
         entries = list()
 
         entryNum = int.from_bytes(data[:4], "big", signed=False)
+        print(entryNum)
         for _ in range(entryNum):
             _entry = PrmEntry.from_bytes(data[4+offset:])
             entries.append(PrmEntry.from_bytes(data[4+offset:]))
@@ -115,9 +116,9 @@ class PrmFile(object):
         def encode_value(value: str) -> bytes:
             value = value.strip()
             if value.startswith("f32("):
-                value = struct.pack(">f", float(value[6:-1].strip().rstrip("f")))
+                value = struct.pack(">f", float(value[4:-1].strip().rstrip("f")))
             elif value.startswith("f64("):
-                value = struct.pack(">d", float(value[6:-1]))
+                value = struct.pack(">d", float(value[4:-1]))
             elif value.startswith("str("):
                 value = value[4:-1].encode("ascii")
             elif value.startswith("\""):
@@ -265,6 +266,7 @@ def init_template(dest: Path):
     bytesEntry = PrmEntry("OurBytesEntry", b"\x00\xD0\xC0\xDE")
 
     prm = PrmFile({intEntry, boolEntry, strEntry, floatEntry, bytesEntry})
+    print(prm.to_text())
     dest.mkdir(parents=True, exist_ok=True)
     dest.write_text(prm.to_text())
 
