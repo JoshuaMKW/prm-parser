@@ -229,14 +229,14 @@ def decode_all(path: Path, dest: Path, suffix: str = ".prm"):
             else:
                 dest.parent.mkdir(parents=True, exist_ok=True)
 
-            dest.write_bytes(prm.to_bytes())
+            dest.write_text(prm.to_text())
         else:
             print(f"[PRM-PARSER] (Path Not Found) Ignoring {path}")
 
     decode(path, dest, suffix)
 
 
-def encode_all(path: Path, dest: Path, suffix: str = ".prm"):
+def encode_all(path: Path, dest: Path, suffix: str = ".txt"):
     startPath = path
 
     def encode(path: Path, dest: Path, suffix: str):
@@ -245,7 +245,7 @@ def encode_all(path: Path, dest: Path, suffix: str = ".prm"):
             for p in path.iterdir():
                 encode(p, dest, suffix)
         elif path.is_file():
-            if path.suffix != ".txt":
+            if path.suffix != suffix:
                 print(f"[PRM-PARSER] (Invalid Extension) Ignoring {path}")
                 return
 
