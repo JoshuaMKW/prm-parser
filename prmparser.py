@@ -223,9 +223,9 @@ def decode_all(path: Path, dest: Path, suffix: str = ".prm"):
             if not dest.is_file() and dest.suffix == "":
                 dest.mkdir(parents=True, exist_ok=True)
                 try:
-                    dest = dest / path.relative_to(startPath).with_suffix(suffix)
+                    dest = dest / path.relative_to(startPath).with_suffix(".txt")
                 except ValueError:
-                    dest = dest.with_name(path.name).with_suffix(suffix)
+                    dest = dest.with_name(path.name).with_suffix(".txt")
             else:
                 dest.parent.mkdir(parents=True, exist_ok=True)
 
@@ -253,9 +253,9 @@ def encode_all(path: Path, dest: Path, suffix: str = ".txt"):
             if not dest.is_file() and dest.suffix == "":
                 dest.mkdir(parents=True, exist_ok=True)
                 try:
-                    dest = dest / path.relative_to(startPath).with_suffix(suffix)
+                    dest = dest / path.relative_to(startPath).with_suffix(".prm")
                 except ValueError:
-                    dest = (dest / path.name).with_suffix(suffix)
+                    dest = (dest / path.name).with_suffix(".prm")
             else:
                 dest.parent.mkdir(parents=True, exist_ok=True)
 
